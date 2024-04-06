@@ -1,0 +1,44 @@
+.inserted-nav {
+  width: 0;
+  color: #fff;
+  margin-right: 24px;
+  background: #555555;
+  transition: width 0.2s;
+  overflow: hidden;
+}
+
+.inserted-nav ul {
+  width: 300px;
+  font-size: 90%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inserted-nav ul li a {
+  color: #fff;
+  padding: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: block;
+}
+
+.custom-icon {
+  cursor: pointer;
+}
+
+.custom-icon i {
+  height: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.custom-icon img {
+  opacity: 0.1;
+  transition: opacity 0.2s, filter 0.2s;
+}
+
+.custom-icon:hover img {
+  opacity: 0.4;
+  filter: invert(200%);
+}
