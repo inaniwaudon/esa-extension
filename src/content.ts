@@ -134,9 +134,17 @@ const addNav = async () => {
   };
 
   // 開閉処理
-  iconAnchor.onclick = () => {
-    displaysNav = !displaysNav;
-    insertedNav.style.width = displaysNav ? "300px" : "0";
+  iconAnchor.onmouseover = () => {
+    displaysNav = true;
+    insertedNav.style.width = "300px";
+  };
+
+  insertedNav.onmouseleave = () => {
+    if (!displaysNav) {
+      return;
+    }
+    displaysNav = false;
+    insertedNav.style.width = "0";
   };
 
   // スクロール時に追随させる
