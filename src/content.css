@@ -27,6 +27,12 @@
   cursor: pointer;
 }
 
+@media (width < 900px) {
+  .custom-icon {
+    display: none;
+  }
+}
+
 .custom-icon i {
   height: 28px;
   display: flex;
