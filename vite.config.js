@@ -12,7 +12,12 @@ const manifest = defineManifest({
     },
   ],
   permissions: ["storage"],
-  web_accessible_resources: [{ resources: ["public/*"] }],
+  web_accessible_resources: [
+    {
+      resources: ["public/*"],
+      matches: ["<all_urls>"],
+    },
+  ],
 });
 
 export default defineConfig({
