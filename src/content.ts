@@ -44,10 +44,12 @@ const getPosts = async (
   if (!("posts" in json)) {
     throw new Error("Posts not found");
   }
-  const result = json.posts.map((item) => ({
-    number: item.number,
-    name: item.name,
-  }));
+  const result = json.posts
+    .map((item) => ({
+      number: item.number,
+      name: item.name,
+    }))
+    .sort((a, b) => (a.name === b.name ? 0 : a.name > b.name ? 1 : -1));
   await chrome.storage.local.set({ [storageKey]: result });
   return result;
 };
