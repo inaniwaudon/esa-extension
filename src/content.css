@@ -55,6 +55,14 @@
   border-radius: 2px;
 }
 
+.spoiler.red {
+  color: rgb(196, 74, 74);
+}
+
+.spoiler.red:not(.display) {
+  background: rgb(196, 74, 74);
+}
+
 .spoiler.display {
   background: none;
 }

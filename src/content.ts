@@ -8,9 +8,9 @@ interface Post {
 }
 
 const getChromeLocal = (key: string) => {
-  return new Promise<Record<string, unknown>>((resolve) => {
+  return new Promise<unknown>((resolve) => {
     chrome.storage.local.get(key, (result) => {
-      resolve(result);
+      resolve(result[key]);
     });
   });
 };
@@ -23,8 +23,8 @@ const getPosts = async (
   // chrome.storage を確認
   const storageKey = `posts:${category}`;
   const storageResult = await getChromeLocal(storageKey);
-  if (storageKey in storageResult) {
-    return storageResult[storageKey] as Post[];
+  if (storageResult) {
+    return storageResult as Post[];
   }
 
   // エンドポイントに fetch
@@ -155,17 +155,73 @@ const addNav = async () => {
   });
 };
 
-const addSpoiler = () => {
+const getSpoilerSetFromStorage = async (storageKey: string) => {
+  const storageResult = await getChromeLocal(storageKey);
+  return new Set(storageResult ? (storageResult as string[]) : []);
+};
+
+const addSpoiler = async () => {
   const content = document.querySelector(".layout-post__content");
-  if (!content) {
+  const articleId = location.pathname.split("/").pop();
+  if (!content || !articleId) {
     return;
   }
 
+  const storageKey = `spoiler:${articleId}`;
+
+  // ||中身|| を置換
   const spoilerRegex = /\|\|(.+?)\|\|/g;
-  content.innerHTML = content.innerHTML.replace(
-    spoilerRegex,
-    '<span class="spoiler" onclick="this.classList.toggle(\'display\')">$1</span>'
-  );
+  const matches = [...content.innerHTML.matchAll(spoilerRegex)];
+
+  // クリック時の処理
+  const onclick = async (e: MouseEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    console.log(element);
+
+    // 赤くする
+    if (e.metaKey || e.ctrlKey) {
+      if (!element.textContent) {
+        return;
+      }
+      const isRed = element.classList.contains("red");
+      element.classList.toggle("red");
+
+      // ストレージに保存
+      const spoilers = await getSpoilerSetFromStorage(storageKey);
+      if (isRed) {
+        spoilers.delete(element.textContent);
+      } else {
+        spoilers.add(element.textContent);
+      }
+      chrome.storage.local.set({ [storageKey]: [...spoilers] });
+      return;
+    }
+
+    // 表示・非表示の切り替え
+    element.classList.toggle("display");
+  };
+
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const match = matches[i];
+    const before = content.innerHTML.substring(0, match.index);
+    const after = content.innerHTML.substring(match.index + match[0].length);
+    content.innerHTML =
+      before + `<span class="spoiler">${match[1]}</span>` + after;
+  }
+
+  const spoilers = content.querySelectorAll(".spoiler");
+  for (const spoiler of spoilers) {
+    const element = spoiler as HTMLElement;
+    element.addEventListener("click", onclick);
+
+    // 赤い場合
+    if (element.textContent) {
+      const spoilers = await getSpoilerSetFromStorage(storageKey);
+      if (spoilers.has(element.textContent)) {
+        element.classList.add("red");
+      }
+    }
+  }
 };
 
 addNav();
