@@ -155,4 +155,18 @@ const addNav = async () => {
   });
 };
 
+const addSpoiler = () => {
+  const content = document.querySelector(".layout-post__content");
+  if (!content) {
+    return;
+  }
+
+  const spoilerRegex = /\|\|(.+?)\|\|/g;
+  content.innerHTML = content.innerHTML.replace(
+    spoilerRegex,
+    '<span class="spoiler" onclick="this.classList.toggle(\'display\')">$1</span>'
+  );
+};
+
 addNav();
+addSpoiler();
