@@ -1,4 +1,5 @@
 import "./content.css";
+import natsort from "natsort";
 
 let displaysNav = false;
 
@@ -44,12 +45,11 @@ const getPosts = async (
   if (!("posts" in json)) {
     throw new Error("Posts not found");
   }
-  const result = json.posts
-    .map((item) => ({
-      number: item.number,
-      name: item.name,
-    }))
-    .sort((a, b) => (a.name === b.name ? 0 : a.name > b.name ? 1 : -1));
+  const sortedNames = json.posts.map((item) => item.name).sort(natsort());
+  const result = sortedNames.map((name) => {
+    const post = json.posts.find((item) => item.name === name);
+    return { number: post!.number, name };
+  });
   await chrome.storage.local.set({ [storageKey]: result });
   return result;
 };
